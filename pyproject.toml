@@ -10,6 +10,7 @@ requires-python = ">=3.11"
 dependencies = [
     "matplotlib>=3.10.9",
     "numpy<2",
+    "nvitop>=1.7.0",
     "parameterfree>=0.0.1",
     "pykoopman==1.2.1",
     "reservoirpy>=0.3.13,<0.4",

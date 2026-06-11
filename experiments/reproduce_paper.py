@@ -29,7 +29,7 @@ import numpy as np
 
 from rcsf.evaluation import run_online, smooth
 from rcsf.methods import EDMD, Persistence, SFeDMD, SpectralFilter
-from rcsf.plotting import style_for
+from rcsf.plotting import label_for, style_for
 from rcsf.systems import SYSTEMS
 from rcsf.systems.base import Trajectory
 
@@ -95,7 +95,8 @@ def plot_curves(curves: dict, title: str, window: int, path: Path, log: bool = T
     plot = plt.semilogy if log else plt.plot
     for label, curve in curves.items():
         color, ls = style_for(label)
-        plot(smooth(curve, window), label=label, color=color, linestyle=ls, lw=1.8)
+        plot(smooth(curve, window), label=label_for(label), color=color,
+             linestyle=ls, lw=1.8)
     plt.xlabel("step")
     plt.ylabel(f"loss (smoothed, window {window})")
     plt.title(title)

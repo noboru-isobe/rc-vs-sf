@@ -25,6 +25,17 @@ STYLES = {
 }
 
 
+# Legend labels: internal method keys stay stable (result filenames), but the
+# baseline's name is opaque, so plots spell out what it does.
+DISPLAY_NAMES = {
+    "persistence": "copy-last baseline ($\\hat{y}_t = y_{t-1}$)",
+}
+
+
+def label_for(name: str) -> str:
+    return DISPLAY_NAMES.get(name, name)
+
+
 def style_for(name: str) -> tuple[str, str]:
     """(color, linestyle) for a method label; tolerant to label variants
     like 'sf+obs (cocob)' or 'sf (vanilla, rls)'."""
@@ -69,7 +80,7 @@ def plot_loss_curves(system: str, results: dict, window: int, outpath: Path,
         curve = smooth(r["errors"].mean(axis=0), window)
         color, ls = style_for(name)
         (plt.semilogy if log else plt.plot)(
-            curve, label=name, color=color, linestyle=ls, lw=1.8)
+            curve, label=label_for(name), color=color, linestyle=ls, lw=1.8)
     plt.xlabel("step")
     plt.ylabel(f"squared error (seed mean, window {window})")
     plt.title(system)

@@ -21,7 +21,7 @@ uv run python experiments/reproduce_paper.py   # 論文再現ゲート
 | sfedmd | eDMDリフト空間でのスペクトラルフィルタ特徴 + リッジ回帰(T/10ごと再フィット) |
 | edmd | PyKoopman eDMD(恒等 + thin-plate RBF 20個、T/10ごと再フィット) |
 | esn-rls / esn-lms | ESN(ReservoirPy)+ RLS / LMS オンラインリードアウト |
-| persistence | ŷ_t = y_{t-1}(全プロットの床) |
+| persistence | copy-lastベースライン: ŷ_t = y_{t-1}(1ステップ前をそのまま出す。全プロットの床。これ並みの手法は「遅れコピー」に退化している) |
 
 ## 論文からの逸脱・曖昧さの解決(重要)
 
