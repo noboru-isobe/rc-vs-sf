@@ -53,6 +53,14 @@ def test_narma10_bounded():
     assert np.abs(traj.y).max() < 2.0
 
 
+def test_narma10_bounded_long_horizon_all_seeds():
+    # The divergence guard must hold at the full experiment length for every
+    # test and validation seed (the unguarded recursion blows up here).
+    for seed in [*range(12), 1000, 1001, 1002]:
+        traj = SYSTEMS["narma10"](seed=seed, T=10000)
+        assert np.abs(traj.y).max() < 10.0, f"seed {seed}"
+
+
 def test_mackey_glass_chaotic_band():
     traj = SYSTEMS["mackey_glass"](seed=0, T=4000)
     y = traj.y[:, 0]

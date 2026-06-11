@@ -64,7 +64,7 @@ def run_system(system: str, seeds, scale: int = 1, methods: list[str] | None = N
     for name, (factory, grid) in grids.items():
         if grid:
             tr = tune(factory, grid, make_tune)
-            params = tr.best_params
+            params = _first_stable(factory, tr, make, system, name)
             print(f"[{system}] {name}: tuned {params} (val score {tr.best_score:.4g})",
                   flush=True)
         else:
@@ -84,6 +84,26 @@ def run_system(system: str, seeds, scale: int = 1, methods: list[str] | None = N
         )
         final = errors[:, -max(1, errors.shape[1] // 10):].mean()
         print(f"[{system}] {name}: final-10% error {final:.4g}", flush=True)
+
+
+def _first_stable(factory, tune_result, make, system, name):
+    """Walk the tuned configs (best first) and return the first whose
+    FULL-LENGTH run on a validation seed stays finite.
+
+    Short-horizon tuning can select configs that only diverge later (e.g. RLS
+    wind-up: forgetting < 1 on a poorly excited periodic system lets P blow up
+    in the unexcited directions). Uses validation data only — no test leakage.
+    """
+    ranked = sorted(tune_result.all_scores, key=lambda ps: ps[1])
+    for params, score in ranked:
+        if not np.isfinite(score):
+            continue
+        res = run_online(factory(**params), make(1000), seed=1000)
+        if np.all(np.isfinite(res.errors)):
+            return params
+        print(f"[{system}] {name}: {params} diverges at full length, "
+              f"falling back", flush=True)
+    raise RuntimeError(f"{system}/{name}: no stable config in the grid")
 
 
 def _n_params(factory, params, traj):
